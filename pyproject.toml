@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datasniff"
+version = "0.1.0"
+description = "Profile, validate and generate dbt tests / DDL for CSV, Parquet and JSON files, powered by DuckDB."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Kajal Choudhary" }]
+keywords = ["data-quality", "data-profiling", "dbt", "duckdb", "data-engineering", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Topic :: Database",
+    "Intended Audience :: Developers",
+]
+dependencies = ["duckdb>=1.1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff==0.7.1"]
+
+[project.scripts]
+datasniff = "datasniff.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kaajjalchoudhary/datasniff"
+Issues = "https://github.com/kaajjalchoudhary/datasniff/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p no:cacheprovider"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["datasniff"]
