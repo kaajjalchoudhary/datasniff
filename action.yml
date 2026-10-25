@@ -1,0 +1,42 @@
+name: "datasniff data check"
+description: "Profile and validate CSV, Parquet and JSON files in CI. Fails the job when a data rule is broken."
+author: "kaajjalchoudhary"
+branding:
+  icon: "search"
+  color: "blue"
+
+inputs:
+  path:
+    description: "File or glob to check, e.g. data/orders.csv or exports/*.parquet"
+    required: true
+  args:
+    description: "Rules for `datasniff check`, e.g. --unique id --no-duplicates --max-null-pct 5"
+    required: false
+    default: ""
+  python-version:
+    description: "Python version to run datasniff with"
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install datasniff
+      shell: bash
+      run: pip install --quiet "$GITHUB_ACTION_PATH"
+    - name: Profile (added to the job summary)
+      shell: bash
+      env:
+        DATASNIFF_PATH: ${{ inputs.path }}
+      run: datasniff profile "$DATASNIFF_PATH" --format markdown >> "$GITHUB_STEP_SUMMARY"
+    - name: Check
+      shell: bash
+      env:
+        DATASNIFF_PATH: ${{ inputs.path }}
+        DATASNIFF_ARGS: ${{ inputs.args }}
+      run: |
+        # shellcheck disable=SC2086
+        datasniff check "$DATASNIFF_PATH" $DATASNIFF_ARGS
