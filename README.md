@@ -38,6 +38,42 @@ datasniff check orders.csv --unique order_id --no-duplicates --max-null-pct 5
 
 Try it on the bundled messy sample: `datasniff examples/orders.csv`.
 
+## Example
+
+Real output for [`examples/orders.csv`](examples/orders.csv), straight from CI:
+
+```text
+examples/orders.csv: 61 rows · 8 columns · 1 duplicate row
+
+column          type     nulls   distinct  min                  max                  top values                                    flags
+--------------  -------  ------  --------  -------------------  -------------------  --------------------------------------------  ---------------------------------
+order_id        BIGINT   0%      60        1001                 1060                 1020 (2), 1001 (1), 1002 (1)
+customer_email  VARCHAR  0%      59        aisha23@example.com  sofia74@example.com  hana62@exampl… (2), ravi10@exampl… (2), …    possible_pii
+order_date      DATE     0%      27        2025-03-01           2025-03-31           2025-03-03 (5), 2025-03-15 (5), …
+status          VARCHAR  0%      5          shipped             shipped              delivered (31), shipped (17), processing (6)  categorical, untrimmed_whitespace
+country         VARCHAR  0%      4         AE                   US                   US (19), AE (17), GB (13)                     categorical
+currency        VARCHAR  0%      1         USD                  USD                  USD (61)                                      constant
+amount          DOUBLE   0%      60        17.4                 449.07               194.28 (2), 100.7 (1), 101.88 (1)
+discount_code   VARCHAR  77.05%  2         SPRING10             WELCOME5             SPRING10 (8), WELCOME5 (6)                    high_nulls, categorical
+```
+
+In one glance: a double-loaded row (`1020` appears twice), a column that is always `USD`, a mostly
+empty discount column, emails that need PII handling, and a `" shipped"` status with a stray leading
+space, which is why `status` has 5 distinct values instead of 4.
+
+`datasniff dbt` turns that into tests. Accepted values are trimmed, so the dirty `" shipped"` rows
+**fail** the generated test instead of being accepted by it:
+
+```yaml
+      - name: status
+        data_type: varchar
+        description: "datasniff flags: categorical, untrimmed_whitespace"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['cancelled', 'delivered', 'processing', 'shipped']
+```
+
 | Command | What you get |
 |---|---|
 | `profile` | Row count, duplicates, and per column: type, null %, distinct count, min/max, top values, flags. Output as `text`, `markdown` (paste into a PR or wiki) or `json` |
