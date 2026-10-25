@@ -11,6 +11,10 @@ def test_dbt_schema_from_example(example_csv):
     assert "- not_null" in order_id and "- unique" not in order_id
     country = yml.split("- name: country")[1].split("- name:")[0]
     assert "values: ['AE', 'GB', 'IN', 'US']" in country
+    status = yml.split("- name: status")[1].split("- name:")[0]
+    # " shipped" (leading space) is dirty data: the generated test must reject it, not accept it
+    assert "values: ['cancelled', 'delivered', 'processing', 'shipped']" in status
+    assert "untrimmed_whitespace" in status
     assert "arguments:" not in yml
 
 

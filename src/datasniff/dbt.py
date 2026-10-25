@@ -42,7 +42,10 @@ def schema_yml(profile: TableProfile, model: str, new_syntax: bool = False) -> s
             if col.is_numeric:
                 args = {"values": "[" + ", ".join(col.all_values) + "]", "quote": "false"}
             else:
-                args = {"values": "[" + ", ".join(_sq(v) for v in col.all_values) + "]"}
+                # Trim and de-duplicate so the test encodes the *intended* values: dirty variants
+                # like " shipped" then fail the test instead of being baked into it.
+                values = sorted({v.strip() for v in col.all_values})
+                args = {"values": "[" + ", ".join(_sq(v) for v in values) + "]"}
             tests += _test_block("accepted_values", args, new_syntax, "          ")
         if tests:
             lines.append("        data_tests:")
