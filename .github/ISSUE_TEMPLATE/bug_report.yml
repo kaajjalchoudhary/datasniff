@@ -1,0 +1,49 @@
+name: Bug report
+description: Something in datasniff doesn't work as expected
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: datasniff version
+      description: Output of `pip show datasniff`, or the commit you installed from
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: File format
+      options: [CSV, Parquet, JSON / NDJSON, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command you ran
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Paste the output or error message
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample data (optional)
+      description: A few rows that reproduce the problem. Please remove any real personal data.
+  - type: input
+    id: env
+    attributes:
+      label: OS and Python version
+      placeholder: e.g. macOS 15, Python 3.12
