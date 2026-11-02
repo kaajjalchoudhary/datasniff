@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a new check, flag, output format or integration
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What data problem would this catch or solve?
+      placeholder: e.g. Dates in the future slip through and break downstream reports
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behaviour
+      description: How you'd like it to work, including example commands or output
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Profile flags, Check rules, dbt output, DDL output, File formats, GitHub Action, Docs, Other]
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
