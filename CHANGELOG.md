@@ -5,6 +5,9 @@ All notable changes to datasniff are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- `outliers` flag for numeric columns with extreme values (beyond 3× the interquartile range).
+
 ## [0.1.0] - 2026-10-25
 
 ### Added

@@ -113,6 +113,7 @@ for col in profile.columns:
 | `high_nulls` / `all_null` | 50%+ / 100% nulls |
 | `untrimmed_whitespace` | Text values with leading or trailing spaces |
 | `numeric_as_text` | Text column where every value parses as a number |
+| `outliers` | Numeric column with extreme values beyond 3× the interquartile range (needs 20+ values) |
 | `possible_pii` | Column name or values look like personal data (email, phone, SSN, DOB, address…) |
 
 ## Development

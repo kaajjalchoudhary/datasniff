@@ -27,6 +27,19 @@ def test_unique_and_numeric_stats(write):
     assert prof.column("score").mean == 155.0
 
 
+def test_outliers_flag(write):
+    values = [str(50 + i) for i in range(29)] + ["10000"]
+    prof = profile_file(write("t.csv", "amount\n" + "\n".join(values) + "\n"))
+    assert "outliers" in prof.column("amount").flags
+
+
+def test_outliers_needs_enough_rows_and_spread(write):
+    small = profile_file(write("small.csv", "amount\n1\n2\n3\n1000\n"))
+    assert "outliers" not in small.column("amount").flags
+    flat = profile_file(write("flat.csv", "amount\n" + "7\n" * 25 + "9\n"))
+    assert "outliers" not in flat.column("amount").flags
+
+
 def test_json_flags_whitespace_and_numeric_text(write):
     lines = [f'{{"code": " {i % 3}", "qty": "{i}", "meta": {{"a": {i}}}}}' for i in range(25)]
     prof = profile_file(write("t.ndjson", "\n".join(lines) + "\n"))
