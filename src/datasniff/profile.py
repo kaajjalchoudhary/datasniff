@@ -11,6 +11,8 @@ from datasniff.reader import source_sql
 
 VIEW = "__datasniff_src"
 ACCEPTED_VALUES_MAX = 10
+OUTLIER_MIN_ROWS = 20  # too few values make quartiles unreliable
+OUTLIER_IQR_MULT = 3.0  # Tukey's "far out" fence: only extreme values are flagged
 
 NUMERIC_TYPES = (
     "TINYINT", "SMALLINT", "INTEGER", "BIGINT", "HUGEINT", "UTINYINT", "USMALLINT",
@@ -70,7 +72,9 @@ class TableProfile:
         return asdict(self)
 
 
-def _flags(col: ColumnProfile, rows: int, untrimmed: int, numeric_like: int) -> list[str]:
+def _flags(
+    col: ColumnProfile, rows: int, untrimmed: int, numeric_like: int, outliers: int = 0
+) -> list[str]:
     flags = []
     if rows and col.non_null == 0:
         flags.append("all_null")
@@ -86,10 +90,28 @@ def _flags(col: ColumnProfile, rows: int, untrimmed: int, numeric_like: int) -> 
         flags.append("untrimmed_whitespace")
     if col.is_text and col.non_null and numeric_like == col.non_null:
         flags.append("numeric_as_text")
+    if outliers:
+        flags.append("outliers")
     looks_like_email = col.is_text and any(EMAIL.match(v.strip()) for v, _ in col.top_values)
     if PII_NAME.search(col.name) or looks_like_email:
         flags.append("possible_pii")
     return flags
+
+
+def _count_outliers(con: duckdb.DuckDBPyConnection, c: str, non_null: int) -> int:
+    """Count values outside Q1 - 3*IQR .. Q3 + 3*IQR (Tukey's far-out fences)."""
+    if non_null < OUTLIER_MIN_ROWS:
+        return 0
+    q1, q3 = con.execute(
+        f"SELECT quantile_cont({c}::DOUBLE, 0.25), quantile_cont({c}::DOUBLE, 0.75) FROM {VIEW}"
+    ).fetchone()
+    iqr = q3 - q1
+    if iqr <= 0:
+        return 0
+    low, high = q1 - OUTLIER_IQR_MULT * iqr, q3 + OUTLIER_IQR_MULT * iqr
+    return con.execute(
+        f"SELECT count(*) FROM {VIEW} WHERE {c}::DOUBLE < ? OR {c}::DOUBLE > ?", [low, high]
+    ).fetchone()[0]
 
 
 def _profile_column(
@@ -114,6 +136,8 @@ def _profile_column(
         f"SELECT {', '.join(exprs)} FROM {VIEW}"
     ).fetchone()
 
+    outliers = _count_outliers(con, c, non_null) if is_num else 0
+
     limit = max(top_n, ACCEPTED_VALUES_MAX)
     values = con.execute(
         f"SELECT CAST({c} AS VARCHAR) AS v, count(*) AS n FROM {VIEW} "
@@ -134,7 +158,7 @@ def _profile_column(
         top_values=[(v, n) for v, n in values[:top_n]],
         all_values=sorted(v for v, _ in values) if distinct <= ACCEPTED_VALUES_MAX else None,
     )
-    col.flags = _flags(col, rows, untrimmed, numeric_like)
+    col.flags = _flags(col, rows, untrimmed, numeric_like, outliers)
     return col
 
 
