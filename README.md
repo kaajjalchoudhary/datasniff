@@ -79,7 +79,7 @@ space, which is why `status` has 5 distinct values instead of 4.
 | `profile` | Row count, duplicates, and per column: type, null %, distinct count, min/max, top values, flags. Output as `text`, `markdown` (paste into a PR or wiki) or `json` |
 | `dbt` | `schema.yml` with `not_null`, `unique` and `accepted_values` tests inferred from the data. Use `--new-test-syntax` for dbt ≥ 1.10 |
 | `ddl` | `CREATE TABLE` for `postgres`, `bigquery`, `snowflake` or `duckdb`, with `NOT NULL` where the data has no nulls |
-| `check` | Pass/fail rules (`--min-rows`, `--max-null-pct`, `--no-duplicates`, `--unique COL`, `--not-null COL`, `--require-column COL`). Exit code 1 on failure |
+| `check` | Pass/fail rules (`--min-rows`, `--max-null-pct`, `--no-duplicates`, `--unique COL`, `--not-null COL`, `--require-column COL`, `--no-flag FLAG`). Exit code 1 on failure |
 
 ## Use it in GitHub Actions
 

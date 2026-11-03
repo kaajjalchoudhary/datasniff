@@ -5,6 +5,10 @@ All notable changes to datasniff are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- `datasniff check --no-flag FLAG`: fail when any column gets a quality flag such as
+  `untrimmed_whitespace` or `possible_pii`. Repeatable.
+
 ## [0.1.0] - 2026-10-25
 
 ### Added
