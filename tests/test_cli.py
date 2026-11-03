@@ -22,6 +22,13 @@ def test_check_exit_codes(example_csv, capsys):
     assert main(["check", example_csv]) == 2  # no rules given
 
 
+def test_check_no_flag(example_csv, capsys):
+    assert main(["check", example_csv, "--no-flag", "all_null"]) == 0
+    assert "PASS  no column flagged all_null  (ok)" in capsys.readouterr().out
+    assert main(["check", example_csv, "--no-flag", "possible_pii"]) == 1
+    assert "FAIL  no column flagged possible_pii" in capsys.readouterr().out
+
+
 def test_writes_output_files(example_csv, tmp_path):
     out = tmp_path / "models" / "stg_orders.yml"
     assert main(["dbt", example_csv, "-o", str(out)]) == 0
