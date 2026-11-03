@@ -24,6 +24,7 @@ def run_checks(
     unique: Iterable[str] = (),
     not_null: Iterable[str] = (),
     require_columns: Iterable[str] = (),
+    forbid_flags: Iterable[str] = (),
 ) -> list[CheckResult]:
     results: list[CheckResult] = []
     names = {c.name for c in profile.columns}
@@ -66,4 +67,7 @@ def run_checks(
             continue
         c = profile.column(name)
         results.append(CheckResult(f"not null: {name}", c.nulls == 0, f"{c.nulls:,} nulls"))
+    for flag in forbid_flags:
+        hits = [c.name for c in profile.columns if flag in c.flags]
+        results.append(CheckResult(f"no column flagged {flag}", not hits, ", ".join(hits) or "ok"))
     return results

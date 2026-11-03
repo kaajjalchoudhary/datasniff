@@ -22,6 +22,10 @@ PII_NAME = re.compile(
     r"card_?number|credit_?card|national_id|tax_id)",
     re.IGNORECASE,
 )
+FLAGS = (
+    "all_null", "high_nulls", "constant", "unique", "categorical",
+    "untrimmed_whitespace", "numeric_as_text", "possible_pii",
+)  # fmt: skip
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 

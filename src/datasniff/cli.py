@@ -5,6 +5,7 @@ datasniff profile data/*.parquet --format markdown -o PROFILE.md
 datasniff dbt orders.csv --model stg_orders -o models/staging/stg_orders.yml
 datasniff ddl orders.csv --dialect bigquery --table analytics.orders
 datasniff check orders.csv --unique order_id --no-duplicates --max-null-pct 5
+datasniff check orders.csv --no-flag untrimmed_whitespace --no-flag possible_pii
 """
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ from datasniff import __version__
 from datasniff.checks import run_checks
 from datasniff.dbt import schema_yml
 from datasniff.ddl import DIALECTS, create_table
-from datasniff.profile import profile_file
+from datasniff.profile import FLAGS, profile_file
 from datasniff.reader import UnsupportedFormat
 from datasniff.render import summary_line, to_json, to_markdown, to_text
 
@@ -78,6 +79,14 @@ def build_parser() -> argparse.ArgumentParser:
     ck.add_argument("--unique", action="append", default=[], metavar="COLUMN")
     ck.add_argument("--not-null", action="append", default=[], metavar="COLUMN")
     ck.add_argument("--require-column", action="append", default=[], metavar="COLUMN")
+    ck.add_argument(
+        "--no-flag",
+        action="append",
+        default=[],
+        choices=FLAGS,
+        metavar="FLAG",
+        help=f"fail if any column gets this quality flag ({', '.join(FLAGS)})",
+    )
     return p
 
 
@@ -117,6 +126,7 @@ def main(argv: list[str] | None = None) -> int:
             unique=args.unique,
             not_null=args.not_null,
             require_columns=args.require_column,
+            forbid_flags=args.no_flag,
         )
         if not results:
             print("datasniff: no rules given (see `datasniff check --help`)", file=sys.stderr)
