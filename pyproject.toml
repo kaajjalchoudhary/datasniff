@@ -21,7 +21,7 @@ classifiers = [
 dependencies = ["duckdb>=1.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff==0.7.1"]
+dev = ["pytest>=8", "ruff==0.17.3"]
 
 [project.scripts]
 datasniff = "datasniff.cli:main"
