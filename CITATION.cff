@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use datasniff in your work, please cite it as below."
+title: "datasniff"
+abstract: "Profile, validate and generate dbt tests and CREATE TABLE DDL for CSV, Parquet and JSON files, powered by DuckDB."
+type: software
+authors:
+  - family-names: "Choudhary"
+    given-names: "Kajal"
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/kaajjalchoudhary/datasniff"
+keywords:
+  - data-quality
+  - data-profiling
+  - dbt
+  - duckdb
+  - data-engineering
