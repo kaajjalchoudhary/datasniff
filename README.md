@@ -23,7 +23,14 @@ data quality problems, and writes the boilerplate you were going to write by han
 ## Install
 
 ```bash
+# latest release (wheel attached to the GitHub release)
+pip install https://github.com/kaajjalchoudhary/datasniff/releases/download/v0.2.0/datasniff-0.2.0-py3-none-any.whl
+
+# or the development version
 pip install git+https://github.com/kaajjalchoudhary/datasniff.git
+
+# or without Python, from GitHub Packages
+docker run --rm -v "$PWD:/data" ghcr.io/kaajjalchoudhary/datasniff orders.csv
 ```
 
 ## Usage

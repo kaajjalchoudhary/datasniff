@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "datasniff"
-version = "0.1.0"
+version = "0.2.0"
 description = "Profile, validate and generate dbt tests / DDL for CSV, Parquet and JSON files, powered by DuckDB."
 readme = "README.md"
 requires-python = ">=3.9"

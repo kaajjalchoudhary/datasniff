@@ -5,9 +5,13 @@ All notable changes to datasniff are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-17
+
 ### Added
 - `datasniff check --no-flag FLAG`: fail when any column gets a quality flag such as
   `untrimmed_whitespace` or `possible_pii`. Repeatable.
+- Container image on GitHub Packages: `docker run --rm -v "$PWD:/data" ghcr.io/kaajjalchoudhary/datasniff orders.csv`.
+- Wheel and source distribution attached to every GitHub release.
 
 ## [0.1.0] - 2026-10-25
 
