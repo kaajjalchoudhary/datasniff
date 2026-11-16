@@ -3,4 +3,4 @@
 from datasniff.profile import ColumnProfile, TableProfile, profile_file
 
 __all__ = ["ColumnProfile", "TableProfile", "profile_file"]
-__version__ = "0.1.0"
+__version__ = "0.2.0"
